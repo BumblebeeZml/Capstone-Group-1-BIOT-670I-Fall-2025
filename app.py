@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 import sqlite3
+import hashlib
 
 app = Flask(__name__)
 DB_PATH = "Tables.db"
@@ -9,12 +10,16 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def md5_hash(password: str) -> str:
+    return hashlib.md5(password.encode()).hexdigest()    
+
 #Login Page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        hashed_password = md5_hash(password)
 
         conn = get_db_connection()
         user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
@@ -33,6 +38,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        hashed_password = md5_hash(password)
 
         try:
             conn = get_db_connection()
