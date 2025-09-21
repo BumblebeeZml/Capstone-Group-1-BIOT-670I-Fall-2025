@@ -25,7 +25,7 @@ def login():
         user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
         conn.close()
 
-        if user and user['password'] == password:
+        if user and user['password'] == hashed_password:
             return f"Welcome, {username}!"
         else:
             return "Invalid credentials, try again."
@@ -42,7 +42,7 @@ def register():
 
         try:
             conn = get_db_connection()
-            conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+            conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
             conn.commit()
             conn.close()
             return redirect('/login')
