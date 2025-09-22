@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
 </head>
-
 <body>
-    <h1>Login</h1>
-    <form method="POST" action="/login">
-        <label>Username:</label>
-        <input type="text" name="username" required><br><br>
+    <h2>Login</h2>
+    <form method="POST">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" value="{{ remembered_username or '' }}">
+        <br><br>
 
-        <label>Password:</label>
-        <input type="password" name="password" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password">
+        <br><br>
+
+        <label>
+            <input type="checkbox" name="remember_me">
+            Remember me
+        </label>
+        <br><br>
 
         <button type="submit">Login</button>
     </form>
 
-    <p>Don't have an account? <a href="/register">Register here</a></p>
+    <!-- Register option -->
+    <p>Don’t have an account? <a href="/register">Register here</a></p>
 </body>
-
 </html>
