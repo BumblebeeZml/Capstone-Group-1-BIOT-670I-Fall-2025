@@ -5,7 +5,7 @@ from files_bp import files_bp
 from db import ensure_db
 
 # Use a single global templates folder at project_root/templates
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__, template_folder="Templates")
 
 # TODO: replace with a strong, secret value in production (e.g., from env var)
 app.secret_key = "supersecretkey"
@@ -47,3 +47,4 @@ if __name__ == "__main__":
     # app.run(debug=True, host="10.0.0.125", port=5000)
 
     # Do NOT use host="0.0.0.0" if you want a single address.
+
