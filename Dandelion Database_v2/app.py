@@ -3,6 +3,9 @@ from flask import Flask, session, redirect, url_for, render_template
 from login_register_bp import login_register_bp
 from files_bp import files_bp
 from db import ensure_db
+# Installs PIL and PyPDF2 libraries for image and pdf metadata extraction
+from PIL import Image
+from PyPDF2 import PdfReader
 
 # Use a single global templates folder at project_root/templates
 app = Flask(__name__, template_folder="Templates")
@@ -35,6 +38,36 @@ def add_no_cache_headers(resp):
     resp.headers.setdefault("Cache-Control", "no-store")
     return resp
 
+# Extracts metadata using libmagic to detect MIME type
+def extract_metadata(file_path):
+    import os
+    import mimetypes
+    import magic
+
+    metadata = {}
+    metadata['size_bytes'] = os.path.getsize(file_path)
+    mime_type = mimetypes.guess_type(file_path)[0] or "unknown"
+    metadata['mime_type'] = mime_type
+    metadata['magic_type'] = magic.from_file(file_path, mime=True)
+
+    if mime_type.startswith('image'):
+        from PIL import Image
+        with Image.open(file_path) as img:
+            metadata['resolution'] = f"{img.width}x{img.height}"
+            metadata['format'] = img.format
+
+    elif mime_type == 'application/pdf':
+        from PyPDF2 import PdfReader
+        reader = PdfReader(file_path)
+        metadata['page_count'] = len(reader.pages)
+        doc_info = reader.metadata
+        if doc_info:
+            metadata['title'] = doc_info.title
+            metadata['author'] = doc_info.author
+# Prints metadata to console for debugging
+    print("Extracted metadata:", metadata)  # Optional debug
+    return metadata
+
 if __name__ == "__main__":
     # Choose exactly one interface to bind to:
 
@@ -47,4 +80,5 @@ if __name__ == "__main__":
     # app.run(debug=True, host="10.0.0.125", port=5000)
 
     # Do NOT use host="0.0.0.0" if you want a single address.
+
 
