@@ -91,9 +91,20 @@ def upload_file():
             """,
             (filename, mime_type, size_bytes, str(dest), comment),
         )
+# Calls the extract_metadata() Function
+        file_id = conn.execute("SELECT last_insert_rowid();").fetchone()[0]
+        metadata = extract_metadata(str(dest))
+        for key, value in metadata.items():
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO metadata (file_id, meta_key, meta_value)
+                VALUES (?, ?, ?);
+                """,
+                (file_id, key, str(value))
+            )
 
     return redirect(url_for("files.index"))
-
+    
 @files_bp.get("/files/<int:file_id>/download")
 @login_required
 def download_file(file_id):
@@ -119,3 +130,4 @@ def delete_file(file_id):
         with get_conn_cm() as conn:
             conn.execute("DELETE FROM files WHERE id = ?;", (file_id,))
     return redirect(url_for("files.index"))
+
