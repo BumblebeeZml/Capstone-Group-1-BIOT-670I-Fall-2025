@@ -1,30 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffd700;
+        }
+
+        .login-container {
+            background-color: #FFF8E7;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #2575fc;
+            box-shadow: 0 0 5px rgba(37, 117, 252, 0.5);
+            outline: none;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-container input {
+            margin-right: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2575fc;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #1a5bcc;
+        }
+
+        p {
+            margin-top: 20px;
+            color: #555;
+        }
+
+        a {
+            color: #2575fc;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body>
-    <h2>Login</h2>
-    <form method="POST" action="{{ url_for('login_register_bp.login') }}">
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" value="{{ remembered_username or '' }}">
-        <br><br>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form method="POST" action="{{ url_for('login_register_bp.login') }}">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" value="{{ remembered_username or '' }}">
 
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password">
-        <br><br>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password">
 
-        <label>
-            <input type="checkbox" name="remember_me">
-            Remember me
-        </label>
-        <br><br>
+            <div class="checkbox-container">
+                <input type="checkbox" name="remember_me" id="remember_me">
+                <label for="remember_me">Remember me</label>
+            </div>
 
-        <button type="submit">Login</button>
-    </form>
+            <button type="submit">Login</button>
+        </form>
 
-    <!-- Register option -->
-    <p>Don’t have an account? <a href="/register">Register here</a></p>
+        <p>Don’t have an account? <a href="{{ url_for('login_register_bp.register') }}">Register here</a></p>
+    </div>
 </body>
+
 </html>

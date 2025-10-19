@@ -1,91 +1,228 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>Files Table</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    :root { color-scheme: light dark; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; max-width: 1000px; }
-    h1 { margin: 0 0 1rem 0; }
-    /* ↑ Slightly thicker border + a touch more padding */
-    form { margin: 1rem 0 2rem; border: 2px solid #ddd; padding: 1.25rem; border-radius: 8px; }
-    .row { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: end; }
-    input[type="file"], textarea { width: 100%; padding: .5rem; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
-    textarea { min-height: 80px; resize: vertical; }
-    button { padding: .6rem 1rem; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
-    th { background: #f6f6f6; text-align: left; position: sticky; top: 0; }
-    .empty { opacity: .7; }
-    .error { color: #b00020; margin: .5rem 0 0; font-weight: 600; }
-    .hint { font-size: .9rem; opacity: .8; }
-    code { background: #f1f1f1; padding: 0 .25rem; border-radius: 4px; }
+    /* Reset & font */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #FFD700;
+      /* bright yellow page */
+      color: #333;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      text-align: center;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form container */
+    form {
+      background-color: #FFF8E7;
+      /* off-white */
+      padding: 1.5rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 1.5rem;
+    }
+
+    .row {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      transition: 0.3s;
+      background-color: #fff;
+    }
+
+    input[type="text"]:focus,
+    input[type="file"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #2575fc;
+      box-shadow: 0 0 5px rgba(37, 117, 252, 0.5);
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2575fc;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #1a5bcc;
+    }
+
+    .hint {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 0.25rem;
+    }
+
+    .error {
+      color: #b00020;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #FFF8E7;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #FFE59D;
+      /* lighter yellow for header */
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr:hover {
+      background-color: #fff3c4;
+    }
+
+    .empty {
+      font-style: italic;
+      opacity: 0.7;
+      margin-top: 1rem;
+    }
+
+    form>.row>div:last-child button {
+      transform: none !important;
+      /* remove weird transform */
+    }
   </style>
 </head>
+
 <body>
   <h1>Files</h1>
 
-  <form method="POST" action="{{ url_for('files.upload_file') }}" enctype="multipart/form-data">
-enctype="multipart/form-data">
+  <!-- Search form -->
+  <form method="GET" action="{{ url_for('files.upload_file') }}">
     <div class="row">
       <div>
-        <label for="file"><strong>Upload a file</strong></label><br>
+        <label for="qs">Search</label>
+        <input id="qs" type="text" name="qs" value="{{ qs or '' }}" placeholder="Search files or comments...">
+      </div>
+      <div>
+        <button type="submit">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Upload form -->
+  <form method="POST" action="{{ url_for('files.upload_file') }}" enctype="multipart/form-data">
+    <div class="row">
+      <div>
+        <label for="file">Upload a file</label>
         <input id="file" name="file" type="file" required>
         <div class="hint">Saved to <code>{{ upload_dir }}</code></div>
       </div>
       <div>
-        <!-- Right 25% of width, up 12.5% (1/8) of height -->
-        <button type="submit" style="transform: translate(25%, -62.5%);">Upload</button>
+        <button type="submit">Upload</button>
       </div>
     </div>
-
     <div style="margin-top:.75rem;">
-      <label for="comment"><strong>Comment (optional)</strong></label><br>
+      <label for="comment">Comment (optional)</label>
       <textarea id="comment" name="comment" placeholder="Add a note about this file..."></textarea>
     </div>
 
     {% if error %}
-      <div class="error">{{ error }}</div>
+    <div class="error">{{ error }}</div>
     {% endif %}
   </form>
 
   {% if rows %}
-    <table>
-      <thead>
-        <tr>
-          {% for c in columns %}
-            <th>{{ c }}</th>
-          {% endfor %}
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in rows %}
-          <tr>
-            {% for c in columns %}
-              <td>
-                {% if c == 'filename' %}
-                  <a href="{{ url_for('files.download_file', file_id=row.id) }}">Download</a>
-{{ r[c] }}</a>
-                {% else %}
-                  {{ r[c] }}
-                {% endif %}
-              </td>
-            {% endfor %}
-            <td>
-              <form method="POST" 
-		    action="{{ url_for('files.delete_file', file_id=row.id) }}">
-                    onsubmit="return confirm('Delete this file and its record?');">
-                <button type="submit">Delete</button>
-              </form>
-            </td>
-          </tr>
+  <table>
+    <thead>
+      <tr>
+        {% for c in columns %}
+        <th>{{ c }}</th>
         {% endfor %}
-      </tbody>
-    </table>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        {% for c in columns %}
+        <td>
+          {% if c == 'filename' %}
+          <a href="{{ url_for('files.download_file', file_id=r.id) }}">{{ r[c] }}</a>
+          {% else %}
+          {{ r[c] }}
+          {% endif %}
+        </td>
+        {% endfor %}
+        <td>
+          <form method="POST" action="{{ url_for('files.delete_file', file_id=r.id) }}"
+            onsubmit="return confirm('Delete this file and its record?');">
+            <button type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
   {% else %}
-    <p class="empty">No rows in <code>files</code> yet.</p>
+  <p class="empty">No rows in <code>files</code> yet.</p>
   {% endif %}
 </body>
+
 </html>

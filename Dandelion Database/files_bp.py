@@ -33,13 +33,20 @@ def _unique_path(directory: Path, filename: str) -> Path:
             return candidate
         i += 1
 
-def _render_index(error=None):
+def _render_index(error=None, qs=None):
+    """Render the files page with optional search query."""
     with get_conn_cm() as conn:
+        # Get column names from the table
         col_info = conn.execute("PRAGMA table_info(files);").fetchall()
         columns = [c["name"] for c in col_info]
-        rows = conn.execute(
-            "SELECT * FROM files ORDER BY created_at DESC, id DESC;"
-        ).fetchall()
+
+        # Fetch all rows
+        rows = conn.execute("SELECT * FROM files ORDER BY created_at DESC, id DESC;").fetchall()
+
+        # Filter by search query if provided
+        if qs:
+            qs_lower = qs.lower()
+            rows = [r for r in rows if qs_lower in r["filename"].lower() or (r["comment"] and qs_lower in r["comment"].lower())]
 
     resp = make_response(render_template(
         "index.html",

@@ -1,15 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Welcome</title>
+    <style>
+        /* Reset and font */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #FFD700;
+            /* bright yellow */
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        p {
+            display: flex;
+            gap: 20px;
+        }
+
+        a {
+            padding: 12px 25px;
+            background-color: #FFF8E7;
+            /* off-white buttons to match login box */
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+        }
+
+        a:hover {
+            background-color: #FFE59D;
+            /* slightly darker off-white */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+    </style>
 </head>
+
 <body>
     <h1>Welcome to the Dandelion Database!</h1>
     <p>
         <a href="{{ url_for('login_register_bp.login') }}">Login</a>
         <a href="{{ url_for('login_register_bp.register') }}">Register</a>
-
     </p>
 </body>
+
 </html>
