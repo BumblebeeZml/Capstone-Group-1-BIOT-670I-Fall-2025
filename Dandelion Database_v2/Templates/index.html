@@ -94,6 +94,18 @@
               </form>
             </td>
           </tr>
+		  <tr>
+		  <td colspan="{{ _cols|length + 1 }}" style="background-color:#f9f9f9; padding:1rem;">
+			<details>
+			  <summary><strong>Metadata</strong></summary>
+			  <ul style="margin:0.5rem 0 0 1rem;">
+				{% for meta in metadata_map[r['id']] %}
+				  <li><strong>{{ meta.meta_key }}</strong>: {{ meta.meta_value }}</li>
+				{% endfor %}
+			  </ul>
+			</details>
+		  </td>
+		</tr>
         {% endfor %}
       </tbody>
     </table>
