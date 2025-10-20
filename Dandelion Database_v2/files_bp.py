@@ -40,10 +40,16 @@ def _render_index(error=None):
     with get_conn_cm() as conn:
         col_info = conn.execute("PRAGMA table_info(files);").fetchall()
         columns = [c["name"] for c in col_info]
-        rows = conn.execute(
-            "SELECT * FROM files ORDER BY created_at DESC, id DESC;"
-        ).fetchall()
-
+        rows = conn.execute("SELECT * FROM files ORDER BY created_at DESC, id DESC;").fetchall()
+        
+		# Attach metadata to each row
+        for r in rows:
+            file_id = r["id"]
+            r["metadata"] = conn.execute(
+                "SELECT meta_key, meta_value FROM metadata WHERE file_id = ?",
+                (file_id,)
+            ).fetchall()
+    
     resp = make_response(render_template(
         "index.html",
         columns=columns,
@@ -130,4 +136,5 @@ def delete_file(file_id):
         with get_conn_cm() as conn:
             conn.execute("DELETE FROM files WHERE id = ?;", (file_id,))
     return redirect(url_for("files.index"))
+
 
