@@ -60,6 +60,13 @@
     {% endif %}
   </form>
 
+
+<form action="{{ url_for('files.search') }}" method="post">
+        <input type="text" name="query" placeholder="Search filename...">
+        <button type="submit">Search</button>
+</form>
+	
+
   {% set _rows = rows | default([]) %}
   {% set _cols = columns | default([]) %}
 
@@ -114,3 +121,4 @@
   {% endif %}
 </body>
 </html>
+
