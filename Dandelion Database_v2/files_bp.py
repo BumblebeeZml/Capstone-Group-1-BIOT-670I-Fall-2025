@@ -137,4 +137,25 @@ def delete_file(file_id):
             conn.execute("DELETE FROM files WHERE id = ?;", (file_id,))
     return redirect(url_for("files.index"))
 
+### search function added by DM
+@files_bp.post("/search")
+@login_required
+def search():
+    search_query = request.form['query']
+    with get_conn_cm() as conn:
+        col_info = conn.execute("PRAGMA table_info(files);").fetchall()
+        columns = [c["name"] for c in col_info]
+        rows = conn.execute(
+             "SELECT * FROM files WHERE filename LIKE ?", ('%' + search_query + '%',)
+        ).fetchall()
+
+    resp = make_response(render_template(
+        "search.html",
+        columns=columns,
+        rows=rows,
+        upload_dir=str(UPLOAD_DIR),  # optional to display where files go
+    ))
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    return resp
 
