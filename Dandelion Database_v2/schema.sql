@@ -20,5 +20,16 @@ CREATE TABLE IF NOT EXISTS files (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS metadata (
+    file_id    INTEGER      NOT NULL
+                            REFERENCES files (id),
+    meta_key   VARCHAR (50) NOT NULL,
+    meta_value TEXT,
+    PRIMARY KEY (
+        file_id,
+        meta_key
+    )
+);
+
 -- Index on filenames
 CREATE INDEX IF NOT EXISTS idx_files_filename ON files (filename);
