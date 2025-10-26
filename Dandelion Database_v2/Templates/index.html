@@ -106,8 +106,9 @@
 			<details>
 			  <summary><strong>Metadata</strong></summary>
 			  <ul style="margin:0.5rem 0 0 1rem;">
-				{% for meta in metadata_map[r['id']] %}
-				  <li><strong>{{ meta.meta_key }}</strong>: {{ meta.meta_value }}</li>
+				{% for key, value in r['metadata'].items() %}
+				  <li><strong>{{ key }}</strong>: {{ value }}</li>
+				  
 				{% endfor %}
 			  </ul>
 			</details>
@@ -121,4 +122,5 @@
   {% endif %}
 </body>
 </html>
+
 
