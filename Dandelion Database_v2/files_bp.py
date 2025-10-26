@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from pathlib import Path
 from mimetypes import guess_type
 from db import get_conn_cm
+from metadata_utils import extract_metadata
 
 # Uploads directory lives alongside this file (project-root/Uploads)
 BASE_DIR = Path(__file__).resolve().parent
@@ -85,6 +86,7 @@ def upload_file():
     except Exception as e:
         return _render_index(error=f"Failed to save file: {e}"), 500
 
+    metadata = extract_metadata(str(dest))
     filename = dest.name
     size_bytes = dest.stat().st_size
     mime_type = file.mimetype or guess_type(str(dest))[0]
@@ -97,16 +99,16 @@ def upload_file():
             """,
             (filename, mime_type, size_bytes, str(dest), comment),
         )
-# Calls the extract_metadata() Function
-        file_id = conn.execute("SELECT last_insert_rowid();").fetchone()[0]
-        metadata = extract_metadata(str(dest))
+		
+		file_id = conn.execute("SELECT last_insert_rowid();").fetchone()[0]
+		
         for key, value in metadata.items():
             conn.execute(
                 """
-                INSERT OR REPLACE INTO metadata (file_id, meta_key, meta_value)
+                INSERT INTO metadata (file_id, meta_key, meta_value)
                 VALUES (?, ?, ?);
                 """,
-                (file_id, key, str(value))
+                (file_id, key, value),
             )
 
     return redirect(url_for("files.index"))
@@ -158,4 +160,5 @@ def search():
     resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     resp.headers["Pragma"] = "no-cache"
     return resp
+
 
