@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome to the Dandelion Database!</h1>
+    <p>
+        <a href="{{ url_for('login_register_bp.login') }}">Login</a>
+        <a href="{{ url_for('login_register_bp.register') }}">Register</a>
+
+    </p>
+</body>
+</html>
+

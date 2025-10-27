@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Search Results</h2>
+    
+	{% set _rows = rows | default([]) %}
+    {% set _cols = columns | default([]) %}
+  
+	  {% if _rows %}
+	<table>
+      <thead>
+        <tr>
+          {% for c in _cols %}
+            <th>{{ c }}</th>
+          {% endfor %}
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in _rows %}
+          <tr>
+            {% for c in _cols %}
+              <td>
+                {% if c == 'filename' %}
+                  <a href="{{ url_for('files.download_file', file_id=r['id']) }}">{{ r[c] }}</a>
+                {% else %}
+                  {{ r[c] }}
+                {% endif %}
+              </td>
+            {% endfor %}
+            <td>
+              <form method="POST"
+                    action="{{ url_for('files.delete_file', file_id=r['id']) }}"
+                    onsubmit="return confirm('Delete this file and its record?');"
+                    style="display:inline">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+	  {% else %}
+    <p class="empty">No rows in <code>files</code> yet.</p>
+  {% endif %}
+	
+	
+	
+</body>
+</html>
+

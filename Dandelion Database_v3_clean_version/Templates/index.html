@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Files Table</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; max-width: 1000px; }
+    h1 { margin: 0 0 1rem 0; }
+    /* ↑ Slightly thicker border + a touch more padding */
+    form { margin: 1rem 0 2rem; border: 2px solid #ddd; padding: 1.25rem; border-radius: 8px; }
+    .row { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: end; }
+    input[type="file"], textarea { width: 100%; padding: .5rem; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
+    textarea { min-height: 80px; resize: vertical; }
+    button { padding: .6rem 1rem; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
+    th { background: #f6f6f6; text-align: left; position: sticky; top: 0; }
+    .empty { opacity: .7; }
+    .error { color: #b00020; margin: .5rem 0 0; font-weight: 600; }
+    .hint { font-size: .9rem; opacity: .8; }
+    code { background: #f1f1f1; padding: 0 .25rem; border-radius: 4px; }
+    /* Top-right user/Logout bar */
+    .topbar { display:flex; justify-content:flex-end; align-items:center; gap:.5rem; margin-bottom:.5rem; font-size:.95rem; }
+    .topbar a { text-decoration:none; }
+  </style>
+</head>
+<body>
+
+  <!-- Signed-in user + Logout -->
+  <div class="topbar">
+    <span>Signed in as <strong>{{ session.get('username') }}</strong></span>
+    &middot;
+    <a href="{{ url_for('login_register_bp.logout') }}">Logout</a>
+  </div>
+
+  <h1>Files</h1>
+
+  <form method="POST" action="{{ url_for('files.upload_file') }}" enctype="multipart/form-data">
+    <div class="row">
+      <div>
+        <label for="file"><strong>Upload a file</strong></label><br>
+        <input id="file" name="file" type="file" required>
+        <div class="hint">Saved to <code>{{ upload_dir }}</code></div>
+      </div>
+      <div>
+        <!-- Right 25% of width, up 62.5% (extra half height as requested earlier) -->
+        <button type="submit" style="transform: translate(25%, -62.5%);">Upload</button>
+      </div>
+    </div>
+
+    <div style="margin-top:.75rem;">
+      <label for="comment"><strong>Comment (optional)</strong></label><br>
+      <textarea id="comment" name="comment" placeholder="Add a note about this file..."></textarea>
+    </div>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+  </form>
+
+  <form action="{{ url_for('files.search') }}" method="post">
+    <input type="text" name="query" placeholder="Search filename...">
+    <button type="submit">Search</button>
+  </form>
+
+  {% set _rows = rows | default([]) %}
+  {% set _cols = columns | default([]) %}
+
+  {% if _rows %}
+    <table>
+      <thead>
+        <tr>
+          {% for c in _cols %}
+            <th>{{ c }}</th>
+          {% endfor %}
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in _rows %}
+          <tr>
+            {% for c in _cols %}
+              <td>
+                {% if c == 'filename' %}
+                  <a href="{{ url_for('files.download_file', file_id=r['id']) }}">{{ r[c] }}</a>
+                {% else %}
+                  {{ r[c] }}
+                {% endif %}
+              </td>
+            {% endfor %}
+            <td>
+              <form method="POST"
+                    action="{{ url_for('files.delete_file', file_id=r['id']) }}"
+                    onsubmit="return confirm('Delete this file and its record?');"
+                    style="display:inline">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+		  <tr>
+		  <td colspan="{{ _cols|length + 1 }}" style="background-color:#f9f9f9; padding:1rem;">
+			<details>
+			  <summary><strong>Metadata</strong></summary>
+			  <ul style="margin:0.5rem 0 0 1rem;">
+				{% for key, value in r['metadata'].items() %}
+				  <li><strong>{{ key }}</strong>: {{ value }}</li>
+				{% endfor %}
+			  </ul>
+			</details>
+		  </td>
+		</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No rows in <code>files</code> yet.</p>
+  {% endif %}
+</body>
+</html>
