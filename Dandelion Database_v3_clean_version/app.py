@@ -4,8 +4,7 @@ from login_register_bp import login_register_bp
 from files_bp import files_bp
 from db import ensure_db
 # Installs PIL and PyPDF2 libraries for image and pdf metadata extraction
-from PIL import Image
-from PyPDF2 import PdfReader
+
 
 # Use a single global templates folder at project_root/templates
 app = Flask(__name__, template_folder="Templates")
@@ -80,6 +79,7 @@ if __name__ == "__main__":
     # app.run(debug=True, host="10.0.0.125", port=5000)
 
     # Do NOT use host="0.0.0.0" if you want a single address.
+
 
 
 
